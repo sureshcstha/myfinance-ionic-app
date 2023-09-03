@@ -66,7 +66,7 @@
       <ion-modal
           :is-open="isAddFundsModalOpen"
           @will-dismiss="dismiss"
-          :initial-breakpoint=".5"
+          :initial-breakpoint="1"
           :breakpoints="[0, .5, 1]"
           handle-behavior="cycle"
       >
