@@ -1,39 +1,58 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import TabsPage from '../views/TabsPage.vue'
+import HomePage from '../views/HomePage.vue';
+import AuthView from "@/views/AuthView.vue";
+
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from "@/firebase";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tabs/tab1'
+    redirect: '/home'
   },
   {
-    path: '/tabs/',
-    component: TabsPage,
-    children: [
-      {
-        path: '',
-        redirect: '/tabs/tab1'
-      },
-      {
-        path: 'tab1',
-        component: () => import('@/views/Tab1Page.vue')
-      },
-      {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue')
-      },
-      {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue')
-      }
-    ]
+    path: '/home',
+    name: 'Home',
+    component: HomePage,
+    meta: {
+      requiredAuth: true
+    }
+  },
+  {
+    path: '/auth',
+    name: 'Auth',
+    component: AuthView
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
+})
+
+const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const removeListener = onAuthStateChanged(
+        auth,
+        (user) => {
+          removeListener();
+          resolve(user)
+        },
+        reject
+    )
+  })
+}
+
+router.beforeEach(async (to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiredAuth)) {
+    if (await getCurrentUser()) {
+      next()
+    } else {
+      next({ name: 'Auth' })
+    }
+  }
+  else next()
 })
 
 export default router
