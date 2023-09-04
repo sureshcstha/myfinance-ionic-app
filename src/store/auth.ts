@@ -1,5 +1,5 @@
 import { defineStore} from "pinia";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail  } from "firebase/auth";
 
 import { setDoc, doc } from "firebase/firestore";
 import { dataBase, auth } from '@/firebase.js'
@@ -61,6 +61,19 @@ export const useAuthStore = defineStore('auth', {
                 })
                 .catch((error) => {
 
+                });
+        },
+
+        forgotPassword(user: any) {
+            // console.log('Send a password reset email!')
+            sendPasswordResetEmail(auth, user.email)
+                .then(async () => {
+                // Password reset email sent!
+
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;                
                 });
         },
     }

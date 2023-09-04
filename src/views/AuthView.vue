@@ -69,6 +69,10 @@ const authenticate = async () => {
     await router.push({name: 'Home'})
   }
 }
+
+const resetPassword = async () => {
+  await authStore.forgotPassword()
+}
 </script>
 
 <style>
